@@ -6,10 +6,12 @@ from sklearn.decomposition import PCA
 from sklearn.tree import DecisionTreeRegressor
 
 class model(BaseEstimator):
-    def __init__(self, preprocess, model):
+    def __init__(self, preprocess=PCA(n_components=10), model=DecisionTreeRegressor()):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation. 
+        
+        The preprocess and model are made variable so this script can be incorporated in pipelines more easily.
         '''
         self.num_train_samples= 38563
         self.num_feat=59
