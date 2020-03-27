@@ -1,12 +1,11 @@
 import numpy as np   # We recommend to use numpy arrays
 from os.path import isfile
-import numpy as np 
 from sklearn.base import BaseEstimator
-from sklearn.decomposition import PCA
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from preprocessIFPCA import PreProcess
 
 class model(BaseEstimator):
-    def __init__(self, preprocess=PCA(n_components=10), model=DecisionTreeRegressor()):
+    def __init__(self):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation. 
@@ -17,8 +16,10 @@ class model(BaseEstimator):
         self.num_feat=59
         self.num_labels=1
         self.is_trained=False
-        self.preprocess = preprocess # Ex. PCA()
-        self.mod = model # Ex. DecisionTreeRegressor()
+        self.preprocess = PreProcess()
+        self.mod = RandomForestRegressor(max_depth=20, 
+                                         random_state=0,  
+                                         n_estimators=100)
     
     def fit(self, X, y):
         '''
@@ -37,8 +38,8 @@ class model(BaseEstimator):
         if X.ndim>1: self.num_feat = X.shape[1]
         if y.ndim>1: self.num_labels = y.shape[1]
 
-        X_preprocess = self.preprocess.fit_transform(X)
-        self.mod.fit(X_preprocess, y)
+        X_preprocess, y_preprocess = self.preprocess.fit_transform_IF_PCA(X, y)
+        self.mod.fit(X_preprocess, y_preprocess)
         self.is_trained = True
 
     def predict(self, X):
@@ -57,8 +58,7 @@ class model(BaseEstimator):
         if X.ndim>1: num_feat = X.shape[1]
         y = np.zeros([num_test_samples, self.num_labels])
 
-
-        X_preprocess = self.preprocess.transform(X)
+        X_preprocess, y_preprocess = self.preprocess.transform_IF_PCA(X, y)
         y = self.mod.predict(X_preprocess)
         return y
 
@@ -71,7 +71,7 @@ class model(BaseEstimator):
 
 def test():
     # Load votre model
-    mod = model(PCA(), DecisionTreeRegressor())
+    mod = model()
     # 1 - créer un data X_random et y_random fictives: utiliser https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.rand.html
 	# 1000 examples of 60 rows (same number of variables as the original dataset
     X_random = np.random.rand(1000, 60)
@@ -82,6 +82,7 @@ def test():
     predictions = mod.predict(X_random)
     # Pour tester cette fonction *test*, il suffit de lancer la commande ```python sample_code_submission/model.py```
     print(predictions)
+    print('The test is a success!')
 
 if __name__ == "__main__":
     test()
