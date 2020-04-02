@@ -3,6 +3,7 @@ from os.path import isfile
 from sklearn.base import BaseEstimator
 from sklearn.ensemble import RandomForestRegressor
 from preprocessIFPCA import PreProcess
+from AutomatedModelTest import ModelTesting
 
 class model(BaseEstimator):
     def __init__(self):
@@ -17,11 +18,11 @@ class model(BaseEstimator):
         self.num_labels=1
         self.is_trained=False
         self.preprocess = PreProcess()
-        self.mod = RandomForestRegressor(max_depth=20, 
-                                         random_state=0,  
-                                         n_estimators=100)
+        #self.mod = RandomForestRegressor(max_depth=20, 
+        #                                 random_state=0,  
+        #                                 n_estimators=100)
     
-    def fit(self, X, y):
+    def fit(self, X, y, models_list, models_name):
         '''
         This function should train the model parameters.
         Here we do nothing in this example...
@@ -34,12 +35,14 @@ class model(BaseEstimator):
         The AutoML format support on-hot encoding, which also works for multi-labels problems.
         Use data_converter.convert_to_num() to convert to the category number format.
         For regression, labels are continuous values.
-        '''
+        '''		
         if X.ndim>1: self.num_feat = X.shape[1]
         if y.ndim>1: self.num_labels = y.shape[1]
-
-        X_preprocess, y_preprocess = self.preprocess.fit_transform_IF_PCA(X, y)
-        self.mod.fit(X_preprocess, y_preprocess)
+        
+        X_preprocess = self.preprocess.fit_transform_PCA(X)
+        self.mod, model_name = ModelTesting(X_preprocess, y, models_list, models_name).best_model()
+        print('Using {}'.format(model_name))
+        self.mod.fit(X_preprocess, y)
         self.is_trained = True
 
     def predict(self, X):
@@ -58,7 +61,7 @@ class model(BaseEstimator):
         if X.ndim>1: num_feat = X.shape[1]
         y = np.zeros([num_test_samples, self.num_labels])
 
-        X_preprocess, y_preprocess = self.preprocess.transform_IF_PCA(X, y)
+        X_preprocess = self.preprocess.transform_PCA(X)
         y = self.mod.predict(X_preprocess)
         return y
 
