@@ -40,7 +40,7 @@ class model(BaseEstimator):
         if y.ndim>1: self.num_labels = y.shape[1]
         
         X_preprocess = self.preprocess.fit_transform_PCA(X)
-        self.mod, model_name = ModelTesting(X_preprocess, y, models_list, models_name).best_model()
+        self.mod, model_name, self.results = ModelTesting(X_preprocess, y, models_list, models_name).best_model()
         print('Using {}'.format(model_name))
         self.mod.fit(X_preprocess, y)
         self.is_trained = True
