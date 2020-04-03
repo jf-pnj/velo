@@ -22,7 +22,7 @@ class model(BaseEstimator):
         #                                 random_state=0,  
         #                                 n_estimators=100)
     
-    def fit(self, X, y, models_list, models_name):
+    def fit(self, X, y, models_list, models_name, preprocessing_name = None):
         '''
         This function should train the model parameters.
         Here we do nothing in this example...
@@ -39,10 +39,10 @@ class model(BaseEstimator):
         if X.ndim>1: self.num_feat = X.shape[1]
         if y.ndim>1: self.num_labels = y.shape[1]
         
-        X_preprocess = self.preprocess.fit_transform_PCA(X)
-        self.mod, model_name, self.results = ModelTesting(X_preprocess, y, models_list, models_name).best_model()
+        #X_preprocess = self.preprocess.fit_transform_PCA(X)
+        self.mod, model_name, self.results = ModelTesting(X, y, models_list, models_name, preprocessing_name).best_model()
         print('Using {}'.format(model_name))
-        self.mod.fit(X_preprocess, y)
+        self.mod.fit(X, y)
         self.is_trained = True
 
     def predict(self, X):
@@ -61,8 +61,8 @@ class model(BaseEstimator):
         if X.ndim>1: num_feat = X.shape[1]
         y = np.zeros([num_test_samples, self.num_labels])
 
-        X_preprocess = self.preprocess.transform_PCA(X)
-        y = self.mod.predict(X_preprocess)
+        #X_preprocess = self.preprocess.transform_PCA(X)
+        y = self.mod.predict(X)
         return y
 
     def save(self, path="./"):
