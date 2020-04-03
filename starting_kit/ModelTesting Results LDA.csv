@@ -1,0 +1,8 @@
+,Average score
+Support Vector Regressor,0.6192254193131995
+Linear Regression,0.15587557806435853
+Nearest Neighbour Regressor,0.9029553313052494
+Gradient Boosting Regressor,0.8834033875192766
+Feedforward Neural Network Regressor,0.703043345975741
+Random Forest Regressor,0.9139936546185812
+AdaBoost Regressor,0.7753989912083277
