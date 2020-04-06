@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score
+import datetime 
 
 from libscores import get_metric
 
@@ -63,10 +64,12 @@ class ModelTesting:
         which is what it returns.
         '''
         results = self.test_crossval()
+        the_date = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
         if self.preprocessing_name:
-            results.to_csv('ModelTesting Results {}.csv'.format(self.preprocessing_name))
+            results.to_csv('result_files/ModelTesting Results_{}_{}.csv'.format(self.preprocessing_name),
+                                                                               the_date)
         else:
-            results.to_csv('ModelTesting Results.csv')
+            results.to_csv('result_file/ModelTesting Results.csv')
         best_model_name = results['Average score'].idxmax()
         best_model_idx = self.models_name.index(best_model_name)
         best_model = self.models_list[best_model_idx]
