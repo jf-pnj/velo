@@ -6,6 +6,10 @@ from sklearn.model_selection import cross_val_score
 from libscores import get_metric
 
 class ModelTesting:
+    '''
+    This class automates the process of testing multiple machine learning models on
+    a dataset.
+    '''
     def __init__(self, 
                  X_train, 
                  y_train, 
@@ -58,7 +62,6 @@ class ModelTesting:
         results dataframe, and afterwards selects the best model from the models list,
         which is what it returns.
         '''
-        
         results = self.test_crossval()
         if self.preprocessing_name:
             results.to_csv('ModelTesting Results {}.csv'.format(self.preprocessing_name))

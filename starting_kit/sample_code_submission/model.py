@@ -6,6 +6,9 @@ from preprocessIFPCA import PreProcess
 from AutomatedModelTest import ModelTesting
 
 class model(BaseEstimator):
+    '''
+    This class creates a callable learning model with the usual methods of .fit() and predict().
+    '''
     def __init__(self):
         '''
         This constructor is supposed to initialize data members.

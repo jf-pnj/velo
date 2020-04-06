@@ -3,7 +3,20 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 class NeuralNetwork(nn.Module):
+    '''
+    This class initialises a Neural Network based on the input arguments. After
+    training, new data can be fed into the network to provide predictions.
+    '''
     def __init__(self, input_dim, layer_dims, dropout_value):
+        '''
+        This constructor creates the Neural Network based on the specifications
+        of the input arguments.
+        
+        input_dim: the number of features of the data
+        layer_dims: a list of integers with the number of neurons per
+        consecutive layer_dims
+        dropout_value: the value of dropout to be used.
+        '''
         super(NeuralNetwork, self).__init__()
 
         layers = []
@@ -22,4 +35,7 @@ class NeuralNetwork(nn.Module):
         self.seq = nn.Sequential(*layers)
 
     def forward(self, inputs):
+        '''
+        This function feeds the data through the created Neural Network
+        '''
         return self.seq(inputs)
