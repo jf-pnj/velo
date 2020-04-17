@@ -55,6 +55,7 @@ class trainingLoopRegression():
         else:
             self.model = NeuralNetwork(input_dim, layer_dims, dropout_value).to(self.device)
                 
+        self.model.apply(self.init_weights)
         self.optimizer = optimizer
         loss_list = []
         dev_score_list = []
@@ -87,7 +88,7 @@ class trainingLoopRegression():
                 
                 self.optimizer.step()
                 
-                cost += loss.item()
+                cost += loss.detach().item() * batch_size / len(train_data[0])
             
             mean_loss = cost / (len(train_data)/batch_size+1)
             dev_score = self.validation_score(self.model, dev_data, dev_labels, dev_scorer)
@@ -99,6 +100,18 @@ class trainingLoopRegression():
             dev_score_list.append(dev_score)
         
         return self.model, loss_list, dev_score_list
+    
+    def init_weights(self, m):
+        '''
+        This function initializes the weights and biases of all the layers in the
+        network. This function automatically only initializes the nn.Linear type
+        objects due to the if-statement check. It uses kaiming initialization and
+        it initializes the biases with zeros.
+        '''
+        if type(m) == th.nn.Linear:
+            th.nn.init.kaiming_uniform_(m.weight.data) 
+            th.nn.init.zeros_(m.bias.data)   
+
     
     def validation_score(self, model, X_dev, y_dev, dev_scorer):
         '''

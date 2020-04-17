@@ -1,0 +1,7 @@
+Support Vector Regressor,C,2.566620013846402,kernel,rbf
+Linear Regression
+Nearest Neighbour Regressor,weights,uniform,p,2,n_neighbors,10
+Gradient Boosting Regressor,criterion,friedman_mse,learning_rate,0.2202157195714934,loss,lad,max_depth,4,min_samples_split,4,n_estimators,254
+Feedforward Neural Network Regressor,solver,lbfgs,learning_rate,constant,activation,logistic
+Random Forest Regressor,n_estimators,145,min_samples_split,5,max_depth,5,criterion,mse
+AdaBoost Regressor,loss,linear

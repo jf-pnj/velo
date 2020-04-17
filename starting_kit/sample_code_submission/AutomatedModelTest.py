@@ -66,8 +66,8 @@ class ModelTesting:
         results = self.test_crossval()
         the_date = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
         if self.preprocessing_name:
-            results.to_csv('result_files/ModelTesting Results_{}_{}.csv'.format(self.preprocessing_name),
-                                                                               the_date)
+            results.to_csv('result_files/ModelTesting Results_{}_{}.csv'.format(self.preprocessing_name,
+                                                                               the_date))
         else:
             results.to_csv('result_file/ModelTesting Results.csv')
         best_model_name = results['Average score'].idxmax()
