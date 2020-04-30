@@ -1,32 +1,31 @@
-'''
-Sample predictive model.
-You must supply at least 4 methods:
-- fit: trains the model.
-- predict: uses the model to perform predictions.
-'''
 import numpy as np   # We recommend to use numpy arrays
 from os.path import isfile
 from sklearn.base import BaseEstimator
-from sklearn.decomposition import PCA
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
+from preprocessIFPCA import PreProcess
+from AutomatedModelTest import ModelTesting
 
-class model (BaseEstimator):
+class model(BaseEstimator):
+    '''
+    This class creates a callable learning model with the usual methods of .fit() and predict().
+    '''
     def __init__(self):
         '''
         This constructor is supposed to initialize data members.
         Use triple quotes for function documentation. 
+        
+        The preprocess and model are made variable so this script can be incorporated in pipelines more easily.
         '''
-        self.num_train_samples=0
-        self.num_feat=1
+        self.num_train_samples= 38563
+        self.num_feat=59
         self.num_labels=1
         self.is_trained=False
-        self.preprocess = PCA(n_components=0.999)
-        self.mod = GradientBoostingRegressor(random_state=42, criterion = 'friedman_mse',
-                             learning_rate = 0.15143814974272138,
-                             loss = 'ls', max_depth = 10,
-                             min_samples_split = 6, n_estimators = 369) # Initalizing the model
+        self.preprocess = PreProcess()
+        #self.mod = RandomForestRegressor(max_depth=20, 
+        #                                 random_state=0,  
+        #                                 n_estimators=100)
     
-    def fit(self, X, y):
+    def fit(self, X, y, models_list, models_name, preprocessing_name = None):
         '''
         This function should train the model parameters.
         Here we do nothing in this example...
@@ -39,16 +38,14 @@ class model (BaseEstimator):
         The AutoML format support on-hot encoding, which also works for multi-labels problems.
         Use data_converter.convert_to_num() to convert to the category number format.
         For regression, labels are continuous values.
-        '''
-        self.num_train_samples = X.shape[0]
+        '''		
         if X.ndim>1: self.num_feat = X.shape[1]
-        print("FIT: dim(X)= [{:d}, {:d}]".format(self.num_train_samples, self.num_feat))
-        num_train_samples = y.shape[0]
         if y.ndim>1: self.num_labels = y.shape[1]
-        print("FIT: dim(y)= [{:d}, {:d}]".format(num_train_samples, self.num_labels))
-        if (self.num_train_samples != num_train_samples):
-            print("ARRGH: number of samples in X and y do not match!")
-        self.mod.fit(X,y)
+        
+        #X_preprocess = self.preprocess.fit_transform_PCA(X)
+        self.mod, model_name, self.results = ModelTesting(X, y, models_list, models_name, preprocessing_name).best_model()
+        print('Using {}'.format(model_name))
+        self.mod.fit(X, y)
         self.is_trained = True
 
     def predict(self, X):
@@ -65,23 +62,33 @@ class model (BaseEstimator):
         '''
         num_test_samples = X.shape[0]
         if X.ndim>1: num_feat = X.shape[1]
-        print("PREDICT: dim(X)= [{:d}, {:d}]".format(num_test_samples, num_feat))
-        if (self.num_feat != num_feat):
-            print("ARRGH: number of features in X does not match training data!")
-        print("PREDICT: dim(y)= [{:d}, {:d}]".format(num_test_samples, self.num_labels))
         y = np.zeros([num_test_samples, self.num_labels])
-        # If you uncomment the next line, you get pretty good results for the Iris data :-)
+
+        #X_preprocess = self.preprocess.transform_PCA(X)
         y = self.mod.predict(X)
         return y
 
-    def save(self, outname='model'):
-        ''' Placeholder function.
-            Save the trained model to avoid re-training in the future.
-        '''
+    def save(self, path="./"):
         pass
-        
-    def load(self):
-        ''' Placeholder function.
-            Load a previously saved trained model to avoid re-training.
-        '''
+
+    def load(self, path="./"):
         pass
+
+
+def test():
+    # Load votre model
+    mod = model()
+    # 1 - créer un data X_random et y_random fictives: utiliser https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.rand.html
+	# 1000 examples of 60 rows (same number of variables as the original dataset
+    X_random = np.random.rand(1000, 60)
+    y_random = np.random.rand(1000, 1)
+    # 2 - Tester l'entrainement avec mod.fit(X_random, y_random)
+    mod.fit(X_random, y_random)
+    # 3 - Test la prediction: mod.predict(X_random)
+    predictions = mod.predict(X_random)
+    # Pour tester cette fonction *test*, il suffit de lancer la commande ```python sample_code_submission/model.py```
+    print(predictions)
+    print('The test is a success!')
+
+if __name__ == "__main__":
+    test()
